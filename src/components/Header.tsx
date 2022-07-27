@@ -1,19 +1,40 @@
 import { MapPin, ShoppingCart } from 'phosphor-react'
+import { useContext } from 'react'
+import { NavLink } from 'react-router-dom'
+import { CoffeeCartContext } from '../contexts/CoffeeCartContext'
 import { Logo } from './Logo'
 
 export function Header() {
+  const { cartItems } = useContext(CoffeeCartContext)
+
+  const cartItemsCounter = cartItems.length
+
   return (
     <header className="px-40 py-8 flex items-center justify-between">
-      <Logo />
-      <div className="flex items-stretch gap-3">
-        <span className="flex items-center justify-between gap-1 w-36 py-[10px] px-2 rounded-md text-sm text-brand-purple bg-brand-purple-light">
+      <NavLink to="/">
+        <Logo />
+      </NavLink>
+      <div className="flex items-stretch gap-3 relative">
+        <button className="flex items-center justify-between gap-1 w-36 py-[10px] px-2 rounded-md text-sm text-brand-purple bg-brand-purple-light">
           <MapPin className="inline-block " weight="fill" size={22} />
           Porto Alegre, RS
-        </span>
-        <span className="flex items-center p-2 rounded-md bg-brand-yellow-light text-brand-yellow-dark">
-          <ShoppingCart size={22} />
-        </span>
+        </button>
+        <NavLink
+          to="/checkout"
+          className="flex items-center p-2 rounded-md bg-brand-yellow-light text-brand-yellow-dark"
+        >
+          <ShoppingCart weight="fill" size={22} />
+        </NavLink>
+        <div
+          className={`${
+            cartItemsCounter > 0 ? 'visible' : 'invisible'
+          } absolute right-0 translate-y-[-8px] translate-x-[8.35px] w-5 h-5 rounded-full flex justify-center items-center font-bold text-xs text-brand-base-button bg-brand-yellow-dark`}
+        >
+          {cartItemsCounter}
+        </div>
       </div>
     </header>
   )
 }
+
+//  translate-y-[-8px]

@@ -1,9 +1,12 @@
 import { Coffee, Package, ShoppingCart, Timer } from 'phosphor-react'
+import { useContext } from 'react'
 import { BannerImg } from '../components/BannerImg'
 import { CoffeeCard } from '../components/CoffeeCard'
-import { coffeeData } from '../lib/coffeeData'
+import { CoffeeCartContext } from '../contexts/CoffeeCartContext'
 
 export function Home() {
+  const { coffeeList } = useContext(CoffeeCartContext)
+
   return (
     <div className="w-full flex flex-col">
       <div className="h-[544px] px-40 py-[92px] flex items-center justify-between gap-14 bg-[url('/bannerBackground.svg')]">
@@ -49,9 +52,10 @@ export function Home() {
       <div className="pt-8 px-40">
         <h2 className="text-[32px] font-brand font-extrabold">Nossos cafés</h2>
         <div className="mt-[54px] mb-36 w-full flex flex-wrap items-center gap-8">
-          {coffeeData.map((coffee) => (
+          {coffeeList.map((coffee) => (
             <CoffeeCard
               key={coffee.id}
+              id={coffee.id}
               name={coffee.name}
               description={coffee.description}
               image={coffee.image}
