@@ -20,8 +20,30 @@ interface CoffeCardProps {
 }
 
 export function CoffeeCard(coffee: CoffeCardProps) {
-  const [amount, setAmount] = useState(1)
-  const { addItemToCart } = useContext(CoffeeCartContext)
+  const { cartItems, addItemToCart } = useContext(CoffeeCartContext)
+  const [amount, setAmount] = useState(() => {
+    const itemIsInCart = cartItems.find((item) => item.id === coffee.id)
+    if (itemIsInCart) {
+      return itemIsInCart.amount
+    } else {
+      return 1
+    }
+  })
+
+  // useEffect(() => {
+  //   function verifyItemAmountChange() {
+  //     const itemIndex = cartItems.findIndex((item) => item.id === coffee.id)
+  //     const isItemInCart = itemIndex !== -1
+  //     if (isItemInCart) {
+  //       const cartAmount = cartItems[itemIndex].amount
+  //       if (cartAmount !== amount) {
+  //         setAmount(cartAmount)
+  //       }
+  //     }
+  //   }
+
+  //   verifyItemAmountChange()
+  // }, [cartItems])
 
   const { id, name, description, labels, price, image } = coffee
 
@@ -52,7 +74,6 @@ export function CoffeeCard(coffee: CoffeCardProps) {
       price,
       amount,
     }
-    console.log(itemToBeAdded)
     addItemToCart(itemToBeAdded)
   }
 
@@ -102,12 +123,11 @@ export function CoffeeCard(coffee: CoffeCardProps) {
               />
             </button>
           </span>
-          <button className="p-2 bg-brand-purple-dark text-brand-base-card rounded-md hover:bg-brand-purple transition-colors">
-            <ShoppingCart
-              weight="fill"
-              size={22}
-              onClick={handleAddItemToCart}
-            />
+          <button
+            className="p-2 bg-brand-purple-dark text-brand-base-card rounded-md hover:bg-brand-purple transition-colors"
+            onClick={handleAddItemToCart}
+          >
+            <ShoppingCart weight="fill" size={22} />
           </button>
         </div>
       </div>

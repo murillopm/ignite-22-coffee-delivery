@@ -1,6 +1,7 @@
-import { Coffee, Package, ShoppingCart, Timer } from 'phosphor-react'
 import { useContext } from 'react'
-import { BannerImg } from '../components/BannerImg'
+import { Coffee, Package, ShoppingCart, Timer } from 'phosphor-react'
+
+import { BannerImg } from '../components/Buttons/Images/BannerImg'
 import { CoffeeCard } from '../components/CoffeeCard'
 import { CoffeeCartContext } from '../contexts/CoffeeCartContext'
 

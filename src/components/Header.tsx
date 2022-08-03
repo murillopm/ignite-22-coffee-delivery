@@ -2,12 +2,15 @@ import { MapPin, ShoppingCart } from 'phosphor-react'
 import { useContext } from 'react'
 import { NavLink } from 'react-router-dom'
 import { CoffeeCartContext } from '../contexts/CoffeeCartContext'
-import { Logo } from './Logo'
+import { Logo } from './Buttons/Images/Logo'
 
 export function Header() {
   const { cartItems } = useContext(CoffeeCartContext)
 
-  const cartItemsCounter = cartItems.length
+  const cartItemsCounter = cartItems.reduce(
+    (total, item) => item.amount + total,
+    0,
+  )
 
   return (
     <header className="px-40 py-8 flex items-center justify-between">
@@ -36,5 +39,3 @@ export function Header() {
     </header>
   )
 }
-
-//  translate-y-[-8px]
