@@ -1,5 +1,6 @@
 import { CurrencyDollar, MapPin, Timer } from 'phosphor-react'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { CheckoutIllustration } from '../../components/Buttons/Images/CheckoutIllustration'
 import {
   CoffeeCartContext,
@@ -9,7 +10,20 @@ import {
 export function OrderSuccess() {
   const { lastCustomerOrder } = useContext(CoffeeCartContext)
   const { address, paymentMethod } = lastCustomerOrder
-  console.log(lastCustomerOrder)
+  const navigate = useNavigate()
+
+  const isThereAnyPreviousOrder = Object.keys(lastCustomerOrder).length > 0
+
+  useEffect(() => {
+    if (!isThereAnyPreviousOrder) {
+      navigate('/')
+    }
+  }, [navigate, isThereAnyPreviousOrder])
+
+  if (!isThereAnyPreviousOrder) {
+    return null
+  }
+
   return (
     <div className="mt-20 px-40 flex flex-col gap-10">
       <div className="flex flex-col gap-1">

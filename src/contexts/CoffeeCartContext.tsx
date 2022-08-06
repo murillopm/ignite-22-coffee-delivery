@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useState } from 'react'
+import { createContext, ReactNode, useEffect, useState } from 'react'
 import { coffeeData } from '../lib/coffeeData'
 
 type CoffeeData = {
@@ -26,6 +26,11 @@ export const PaymentMethodsToPt = {
   cash: 'Dinheiro',
 }
 
+type LocationCoords = {
+  latitude: number
+  longitude: number
+}
+
 type CustomerOrder = {
   address: {
     street: string
@@ -40,6 +45,7 @@ type CustomerOrder = {
 }
 
 interface CoffeeCartType {
+  currentLocation: LocationCoords
   coffeeList: CoffeeData[]
   cartItems: CoffeeCartData[]
   lastCustomerOrder: CustomerOrder
@@ -60,11 +66,36 @@ export const CoffeeCartContext = createContext({} as CoffeeCartType)
 export function CoffeCartContextProvider({
   children,
 }: CoffeCartContextProviderProps) {
-  const [cartItems, setCartItems] = useState<CoffeeCartData[]>([])
+  const [cartItems, setCartItems] = useState<CoffeeCartData[]>(() => {
+    const storedDataAsJSON = localStorage.getItem('@coffee-delivery:cart-items')
+    if (storedDataAsJSON) {
+      return JSON.parse(storedDataAsJSON)
+    }
+    return []
+  })
   const [lastCustomerOrder, setLastCustomerOrder] = useState(
     {} as CustomerOrder,
   )
+  const [currentLocation, setCurrentLocation] = useState({} as LocationCoords)
   const coffeeList = coffeeData
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition((coordinates) => {
+      if (coordinates) {
+        setCurrentLocation({
+          latitude: coordinates.coords.latitude,
+          longitude: coordinates.coords.longitude,
+        })
+      }
+    })
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem(
+      '@coffee-delivery:cart-items',
+      JSON.stringify(cartItems),
+    )
+  }, [cartItems])
 
   function incrementItemAmount(id: number) {
     const newCartItems = cartItems.map((item) => {
@@ -130,6 +161,7 @@ export function CoffeCartContextProvider({
   return (
     <CoffeeCartContext.Provider
       value={{
+        currentLocation,
         coffeeList,
         cartItems,
         addItemToCart,
