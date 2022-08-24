@@ -30,21 +30,6 @@ export function CoffeeCard(coffee: CoffeCardProps) {
     }
   })
 
-  // useEffect(() => {
-  //   function verifyItemAmountChange() {
-  //     const itemIndex = cartItems.findIndex((item) => item.id === coffee.id)
-  //     const isItemInCart = itemIndex !== -1
-  //     if (isItemInCart) {
-  //       const cartAmount = cartItems[itemIndex].amount
-  //       if (cartAmount !== amount) {
-  //         setAmount(cartAmount)
-  //       }
-  //     }
-  //   }
-
-  //   verifyItemAmountChange()
-  // }, [cartItems])
-
   const { id, name, description, labels, price, image } = coffee
 
   function handleDecreaseAmount() {

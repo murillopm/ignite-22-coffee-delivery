@@ -1,5 +1,12 @@
-import { createContext, ReactNode, useEffect, useState } from 'react'
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
 import { coffeeData } from '../lib/coffeeData'
+import { geoLocationApiClient } from '../services/axios'
 
 type CoffeeData = {
   id: number
@@ -26,11 +33,6 @@ export const PaymentMethodsToPt = {
   cash: 'Dinheiro',
 }
 
-type LocationCoords = {
-  latitude: number
-  longitude: number
-}
-
 type CustomerOrder = {
   address: {
     street: string
@@ -44,8 +46,13 @@ type CustomerOrder = {
   items: CoffeeCartData[]
 }
 
+type UserLocation = {
+  city: string
+  state: string
+}
+
 interface CoffeeCartType {
-  currentLocation: LocationCoords
+  location: UserLocation
   coffeeList: CoffeeData[]
   cartItems: CoffeeCartData[]
   lastCustomerOrder: CustomerOrder
@@ -76,19 +83,8 @@ export function CoffeCartContextProvider({
   const [lastCustomerOrder, setLastCustomerOrder] = useState(
     {} as CustomerOrder,
   )
-  const [currentLocation, setCurrentLocation] = useState({} as LocationCoords)
+  const [location, setLocation] = useState({} as UserLocation)
   const coffeeList = coffeeData
-
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition((coordinates) => {
-      if (coordinates) {
-        setCurrentLocation({
-          latitude: coordinates.coords.latitude,
-          longitude: coordinates.coords.longitude,
-        })
-      }
-    })
-  }, [])
 
   useEffect(() => {
     localStorage.setItem(
@@ -96,6 +92,27 @@ export function CoffeCartContextProvider({
       JSON.stringify(cartItems),
     )
   }, [cartItems])
+
+  const getAddress = useCallback(async (lat: number, lng: number) => {
+    const { data } = await geoLocationApiClient.get('', {
+      params: {
+        location: `${lat},${lng}`,
+      },
+    })
+
+    const city = data.results[0].locations[0].adminArea5
+    const state = data.results[0].locations[0].adminArea3
+
+    setLocation({ city, state })
+  }, [])
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(({ coords }) => {
+      if (coords) {
+        getAddress(coords.latitude, coords.longitude)
+      }
+    })
+  }, [getAddress])
 
   function incrementItemAmount(id: number) {
     const newCartItems = cartItems.map((item) => {
@@ -161,7 +178,7 @@ export function CoffeCartContextProvider({
   return (
     <CoffeeCartContext.Provider
       value={{
-        currentLocation,
+        location,
         coffeeList,
         cartItems,
         addItemToCart,

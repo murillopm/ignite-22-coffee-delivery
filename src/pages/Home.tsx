@@ -1,25 +1,12 @@
-import { useContext, useEffect } from 'react'
+import { useContext } from 'react'
 import { Coffee, Package, ShoppingCart, Timer } from 'phosphor-react'
-import axios from 'axios'
 
 import { BannerImg } from '../components/Buttons/Images/BannerImg'
 import { CoffeeCard } from '../components/CoffeeCard'
 import { CoffeeCartContext } from '../contexts/CoffeeCartContext'
 
 export function Home() {
-  const { coffeeList, currentLocation } = useContext(CoffeeCartContext)
-
-  useEffect(() => {
-    async function getAddress() {
-      const response =
-        await axios.get(`https://reverse.geocoder.ls.hereapi.com/6.2/reversegeocode.json
-    ?apiKey=2Cw2fYs8TE6hWaScfDTsHbTpjVfDLIzAVo6HXkE591g
-    &mode=retrieveAddresses
-    &prox=41.8842,-87.6388,250`)
-      console.log(response)
-    }
-    getAddress()
-  }, [])
+  const { coffeeList } = useContext(CoffeeCartContext)
 
   return (
     <div className="w-full flex flex-col">

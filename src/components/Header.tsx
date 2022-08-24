@@ -5,7 +5,7 @@ import { CoffeeCartContext } from '../contexts/CoffeeCartContext'
 import { Logo } from './Buttons/Images/Logo'
 
 export function Header() {
-  const { cartItems } = useContext(CoffeeCartContext)
+  const { cartItems, location } = useContext(CoffeeCartContext)
 
   const cartItemsCounter = cartItems.reduce(
     (total, item) => item.amount + total,
@@ -18,9 +18,9 @@ export function Header() {
         <Logo />
       </NavLink>
       <div className="flex items-stretch gap-3 relative">
-        <button className="flex items-center justify-between gap-1 w-36 py-[10px] px-2 rounded-md text-sm text-brand-purple bg-brand-purple-light">
+        <button className="flex items-center justify-between gap-1 py-[10px] px-2 rounded-md text-sm text-brand-purple bg-brand-purple-light">
           <MapPin className="inline-block " weight="fill" size={22} />
-          Porto Alegre, RS
+          {location.city && location.city + ' - ' + location.state}
         </button>
         <NavLink
           to="/checkout"
