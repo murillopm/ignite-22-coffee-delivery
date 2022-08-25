@@ -6,3 +6,12 @@ body {
   @apply bg-brand-background;
   -webkit-font-smoothing: antialiased;
 }
+
+button[role='radio'] {
+  &[data-state='checked'] {
+    @apply border-brand-purple bg-brand-purple-light
+  }
+  &[data-state='unchecked'] {
+    @apply hover:bg-brand-base-hover transition-colors
+  }
+}

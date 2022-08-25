@@ -1,5 +1,5 @@
-import { Fragment, useContext, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Fragment, useContext } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as zod from 'zod'
@@ -10,15 +10,13 @@ import {
   MapPinLine,
   Money,
 } from 'phosphor-react'
+import * as RadioGroup from '@radix-ui/react-radio-group'
 
 import { CheckoutOrderButton } from '../../components/Buttons/CheckoutOrderButton'
 import { PaymentMethodButton } from '../../components/Buttons/PaymentMethodButton'
 import { CoffeeCartCard } from '../../components/CoffeeCartCard'
 import { FormInput } from '../../components/FormInput'
-import {
-  CoffeeCartContext,
-  PaymentMethods,
-} from '../../contexts/CoffeeCartContext'
+import { CoffeeCartContext } from '../../contexts/CoffeeCartContext'
 
 interface AddressFormInputs {
   zipCode: string
@@ -28,6 +26,7 @@ interface AddressFormInputs {
   neighborhood: string
   city: string
   state: string
+  paymentMethod: 'credit-card' | 'debit-card' | 'cash'
 }
 
 const schema = zod.object({
@@ -48,17 +47,16 @@ const schema = zod.object({
   state: zod.string().min(2, {
     message: 'UF inválida',
   }),
+  paymentMethod: zod.enum(['credit-card', 'debit-card', 'cash']),
 })
 
 export function Checkout() {
-  const [activePaymentMethod, setActivePaymentMethod] = useState<
-    PaymentMethods | undefined
-  >(undefined)
   const { cartItems, clearCart, registerCustomerOrder } =
     useContext(CoffeeCartContext)
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<AddressFormInputs>({
     resolver: zodResolver(schema),
@@ -81,10 +79,6 @@ export function Checkout() {
   }
 
   function handleOrderSubmit(data: AddressFormInputs) {
-    if (!activePaymentMethod) {
-      window.alert('Selecione uma forma de pagamento')
-      return
-    }
     registerCustomerOrder({
       address: {
         street: data.street,
@@ -93,7 +87,7 @@ export function Checkout() {
         neighborhood: data.neighborhood,
         state: data.state,
       },
-      paymentMethod: activePaymentMethod,
+      paymentMethod: data.paymentMethod,
       items: cartItems,
       totalPrice,
     })
@@ -185,7 +179,36 @@ export function Checkout() {
               </p>
             </div>
           </div>
-          <div className="flex gap-3">
+
+          <Controller
+            render={({ field }) => (
+              <RadioGroup.Root
+                className="flex gap-3"
+                onValueChange={field.onChange}
+                value={field.value}
+              >
+                <PaymentMethodButton
+                  name="Cartão de crédito"
+                  value="credit-card"
+                  icon={<CreditCard size={16} className="text-brand-purple" />}
+                />
+                <PaymentMethodButton
+                  name="Cartão de débito"
+                  value="debit-card"
+                  icon={<Bank size={16} className="text-brand-purple" />}
+                />
+                <PaymentMethodButton
+                  name="Dinheiro"
+                  value="cash"
+                  icon={<Money size={16} className="text-brand-purple" />}
+                />
+              </RadioGroup.Root>
+            )}
+            control={control}
+            name="paymentMethod"
+          />
+
+          {/* <div className="flex gap-3">
             <PaymentMethodButton
               name="Cartão de crédito"
               icon={<CreditCard size={16} className="text-brand-purple" />}
@@ -204,7 +227,7 @@ export function Checkout() {
               isActive={activePaymentMethod === 'cash'}
               onClick={() => setActivePaymentMethod('cash')}
             />
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="flex flex-col w-[448px]">
